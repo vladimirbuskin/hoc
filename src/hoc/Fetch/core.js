@@ -30,12 +30,10 @@ function Fetch (urlFunc, map = defaultMap, debouncePeriod = 200) {
     }
 
     componentWillMount () {
-      console.log('componentWillMount')
       this.call(EMPTY, EMPTY)
     }
 
     componentWillUpdate (props) {
-      console.log('componentWillUpdate')
       this.call(this.props, props)
     }
 

@@ -1,3 +1,0 @@
---require chai
---require src/mocks
-./src/**/*.test.js

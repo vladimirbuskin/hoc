@@ -14,3 +14,24 @@ tried in chrome, may not work in older browsers,
 need to include polyfils
 
 
+NOTES:
+i've added .babelrc and added jest configuration into package.json because 
+
+```
+"react-scripts test" command
+```
+
+is using jest prior v18.1 and does not output console.* in tests.
+so i installed v18.1 and using it through
+
+```
+'jest' command
+```
+
+after react-scripts updated to later than v18.1 we can delete
+```
+__mocks__     
+package.json - only jest section
+babel.rc      
+```
+

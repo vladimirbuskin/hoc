@@ -19,9 +19,15 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "jest",
-    "testWatch": "jest --watch",
+    "test": "react-scripts test --env=jsdom",
+    "testWatch": "jest --env=jsdom --watch",
     "eject": "react-scripts eject",
     "postinstall": "bower install"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "\\.(css|less)$": "<rootDir>/__mocks__/styleMock.js",    
+      "\\.(gif|ttf|eot|svg)$": "<rootDir>/__mocks__/fileMock.js"
+    }
   }
 }

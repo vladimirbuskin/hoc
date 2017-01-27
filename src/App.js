@@ -5,8 +5,8 @@ import PersonRepositories from './controls/PersonRepositories'
 import Fetch from './hoc/Fetch/index'
 
 // css
-import '../bower_components/skeleton/css/normalize.css'
-import '../bower_components/skeleton/css/skeleton.css'
+//import '../bower_components/skeleton/css/normalize.css'
+//import '../bower_components/skeleton/css/skeleton.css'
 import './App.css'
 
 class App extends Component {
