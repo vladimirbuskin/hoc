@@ -2,6 +2,7 @@
   "name": "goeuroHOC",
   "version": "0.1.0",
   "private": true,
+  "homepage": "./",
   "devDependencies": {
     "chai": "^3.5.0",
     "enzyme": "^2.7.1",
