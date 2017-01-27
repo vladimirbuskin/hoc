@@ -58,7 +58,12 @@ function Fetch (urlFunc, map = defaultMap, debouncePeriod = 200) {
         return r.json()
       })
       .then(data => {
-        this.setState({ ...map(data), isLoading: false })
+        // if we got result for the last request, otherwise we don't need it
+        console.info('result',this.props, url);
+        if (urlFunc(this.props) == url)
+        {
+          this.setState({ ...map(data), isLoading: false })
+        }
         return data
       })
       .catch(er => {

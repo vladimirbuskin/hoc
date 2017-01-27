@@ -5,27 +5,13 @@ import data from './data'
 
 
 var fetchSuccess = url => {
-  return new Promise((resolve, reject) => {
-    resolve({
-      json: () => new Promise((resolve, reject) => {
-        resolve(data)
-      })
-    })
-  })
+  return Promise.resolve(Promise.resolve(data))
 }
 var fetchFail = url => {
-  return new Promise((resolve, reject) => {
-    reject({message: 'network error'})
-  })
+  return Promise.reject({message: 'network error'})
 }
 var fetchFail2 = url => {
-  return new Promise((resolve, reject) => {
-    resolve({
-      json: () => new Promise((resolve, reject) => {
-        reject({message: 'parse error'})
-      })
-    })
-  })
+  return Promise.resolve(Promise.reject({message: 'parse error'}))
 }
 
 var FetchSuccess = core(fetchSuccess)
@@ -73,6 +59,10 @@ describe("Fetch", function () {
       expect(Array.isArray(mock.state.isLoading)).toEqual(false)
       // done
       done()
+    })
+    .catch(e => {
+      console.error(e)
+      done();
     })
 
     // second call should return false, we already started with current url
