@@ -1,5 +1,5 @@
 import React from 'react'
-import debounce from 'lodash/debounce'
+import {debounce} from 'lodash'
 
 export function defaultMap(data,error) {
   return {data, error}
