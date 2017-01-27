@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "./",
   "devDependencies": {
+    "bower": "1.8.0",
     "chai": "^3.5.0",
     "enzyme": "^2.7.1",
     "react-addons-test-utils": "^15.4.2",
@@ -20,6 +21,7 @@
     "build": "react-scripts build",
     "test": "jest",
     "testWatch": "jest --watch",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "postinstall": "bower install"
   }
 }
