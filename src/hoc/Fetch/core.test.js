@@ -4,23 +4,33 @@ import core from './core'
 import data from './data'
 
 
-var fetchSuccess = url => {
-  return Promise.resolve(Promise.resolve(data))
-}
-var fetchFail = url => {
-  return Promise.reject({message: 'network error'})
-}
-var fetchFail2 = url => {
-  return Promise.resolve(Promise.reject({message: 'parse error'}))
+
+function makeSuccessFetch(data, ms) {
+  return url => {
+    return Promise.resolve({json: () => new Promise((resolve, reject) => { setTimeout(()=>resolve(data), ms) }) })
+  }
 }
 
-var FetchSuccess = core(fetchSuccess)
-var FetchFail = core(fetchFail)
-var FetchFail2 = core(fetchFail2)
+var fetchFailNetwork = url => {
+  return new Promise((resolve, reject) => {
+    reject({message: 'network error'})
+  })
+}
+var fetchFailParse = url => {
+  return new Promise((resolve, reject) => {
+    resolve({
+      json: () => new Promise((resolve, reject) => {
+        reject({message: 'parse error'})
+      })
+    })
+  })
+}
+
 
 // get clean mock function
-var getMock = () => (
-  {
+function getMock () {
+  return {
+    props: {},
     state: {
       firstLoadDone: false,
       data: null,
@@ -31,7 +41,7 @@ var getMock = () => (
       Object.assign(this.state, st)
     }
   }
-)
+}
 
 describe("Fetch", function () {
 
@@ -42,6 +52,7 @@ describe("Fetch", function () {
       return (<div />)
     }
 
+    var FetchSuccess = core(makeSuccessFetch(data, 0))
     var FetchComp = FetchSuccess((props) => 'url'+props.urlId, undefined, 0)(Comp)
   
     var mock = getMock();
@@ -50,7 +61,7 @@ describe("Fetch", function () {
 
     // it stamps isLoading state property to true
     expect(mock.state.isLoading).toEqual(true)
-    
+
     pr.then(d => {
       expect(Array.isArray(d)).toEqual(true)
       // data is stamped into state data
@@ -81,11 +92,11 @@ describe("Fetch", function () {
       return (<div />)
     }
 
-    var FetchComp = FetchFail((props) => 'url'+props.urlId, undefined, 0)(Comp)
+    var FetchFailNetwork = core(fetchFailNetwork)
+    var FetchComp = FetchFailNetwork((props) => 'url'+props.urlId, undefined, 0)(Comp)
     
     var mock = getMock();
 
-    
     var pr = FetchComp.prototype.call.call(mock, {}, {})
     
     pr.then((d, e) => {
@@ -102,7 +113,8 @@ describe("Fetch", function () {
       return (<div />)
     }
 
-    var FetchComp = FetchFail2((props) => 'url'+props.urlId, undefined, 0)(Comp)
+    var FetchFailParse = core(fetchFailParse)
+    var FetchComp = FetchFailParse((props) => 'url'+props.urlId, undefined, 0)(Comp)
     
     var mock = getMock();
     
@@ -112,6 +124,48 @@ describe("Fetch", function () {
       expect(mock.state.error).not.toBeNull()
       expect(mock.state.error.message).toEqual('parse error')
       done()
+    })
+
+  })
+
+  it('makes a two calls get results of last', function (done) {
+
+    var Comp = props => {
+      return (<div />)
+    }
+
+
+    var FetchSlow = core(makeSuccessFetch({d:'1'}, 100))
+    var FetchFast = core(makeSuccessFetch({d:'12'}, 10))
+
+    var FetchSlowComp = FetchSlow((props) => 'url_'+props.entered, undefined, 0)(Comp)
+    var FetchFastComp = FetchFast((props) => 'url_'+props.entered, undefined, 0)(Comp)
+
+    // process
+    // ======================
+    // we entered '1'
+    // went '1' call on 100 ms
+    // we entered '12'
+    // went '12' call on 10 ms
+    // we received '12' call, when entered == '12'
+    // we received '1' call, when entered == '12'  - should skip this
+
+    var mock = getMock();
+    
+    mock.props.entered = '1'
+    var p1 = FetchSlowComp.prototype.call.call(mock, {}, {entered: '1'}); // 100ms  -- this result should be skipped
+    mock.props.entered = '12'
+    var p2 = FetchFastComp.prototype.call.call(mock, {}, {entered: '12'}); // 10ms
+
+    var pr = Promise.all([p1, p2])
+
+    pr.then((d, e) => {
+      // after all callbacks we got latest result
+      expect(mock.state.data.d).toEqual('12');
+      done()
+    })
+    .catch(e => {
+      console.error(e)
     })
 
   })

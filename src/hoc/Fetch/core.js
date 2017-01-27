@@ -2,8 +2,11 @@ import React from 'react'
 import {debounce} from 'lodash'
 
 export function defaultMap(data,error) {
-  return {data, error}
+  // maps to object with data, error, names
+  return { data, error }
 }
+
+const EMPTY = {}
 
 // dependencies
 export default (fetch) =>
@@ -16,7 +19,6 @@ function Fetch (urlFunc, map = defaultMap, debouncePeriod = 200) {
     constructor (props) {
       super(props)
       this.state = {
-        firstLoadDone: false,
         data: null,
         error: null,
         isLoading: false
@@ -29,7 +31,7 @@ function Fetch (urlFunc, map = defaultMap, debouncePeriod = 200) {
 
     componentWillMount () {
       console.log('componentWillMount')
-      this.call({}, {})
+      this.call(EMPTY, EMPTY)
     }
 
     componentWillUpdate (props) {
@@ -42,16 +44,17 @@ function Fetch (urlFunc, map = defaultMap, debouncePeriod = 200) {
       var oldUrl = urlFunc(prevProps)
 
       // if url didn't change prevent call
-      if (this.state.firstLoadDone && url === oldUrl) return false
+      if (this.firstLoadDone && url === oldUrl) return false
 
       // if url null, set state to empty
       if (url == null) {
-        this.setState({ ...map({}, null), isLoading: false })
+        this.setState({ ...map(EMPTY, null), isLoading: false })
         return false
       }
 
       // if url is not empty, start loading
-      this.setState({ isLoading: true, firstLoadDone: true })
+      this.firstLoadDone = true
+      this.setState({ isLoading: true })
 
       return fetch(url)
       .then(r => {
@@ -59,7 +62,7 @@ function Fetch (urlFunc, map = defaultMap, debouncePeriod = 200) {
       })
       .then(data => {
         // if we got result for the last request, otherwise we don't need it
-        console.info('result',this.props, url);
+        // console.info('received',urlFunc(this.props), url);
         if (urlFunc(this.props) == url)
         {
           this.setState({ ...map(data), isLoading: false })
