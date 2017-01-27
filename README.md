@@ -5,7 +5,7 @@ Tried Higher Order Component Techinque
 
 
 For regular browsers
-<a href="https://vladimirbuskin.github.io/goeuroHOC/demo/">https://vladimirbuskin.github.io/goeuroHOC/demo/</a>
+<a href="https://vladimirbuskin.github.io/hoc/demo/">https://vladimirbuskin.github.io/hoc/demo/</a>
 
 TODO:
 tried in chrome, may not work in older browsers,
