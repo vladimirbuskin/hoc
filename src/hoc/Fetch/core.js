@@ -46,7 +46,7 @@ function Fetch (urlFunc, map = defaultMap, debouncePeriod = 200) {
 
       // if url null, set state to empty
       if (url == null) {
-        this.setState({ ...map(EMPTY, null), isLoading: false })
+        this.setState({ ...map(EMPTY, null), isLoading: false, firstLoadDone: true })
         return false
       }
 
